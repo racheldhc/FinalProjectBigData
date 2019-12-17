@@ -11,27 +11,35 @@
 // mongoimport --db FinalProject --collection JLHome1718Temperature --type csv --fields "dateandtime, temperature" --file /Users/racheldhc/Documents/year3/BigDataSystems/CA2/BDSDA2FPData/JLHome1718Temperature.csv 
 
 // RUN THE FOLLOWING COMMANDS TO CHANGE THE DATE / DATEANDTIME COLUMN TO ISODATE
- db.JLHome1718Power.find().forEach(function(element) {
+db.JLHome1718Power.find().forEach(function(element) {
     element.dateandtime = new Date(element.dateandtime);
     db.JLHome1718Power.save(element);
     })
     db.JLHome1718Power.find({"dateandtime" : ISODate("1970-01-01T00:00:00Z")}).count()
 
-    db.JLHome1718Temperature.find().forEach(function(element) {
-        element.dateandtime = new Date(element.dateandtime);
-        db.JLHome1718Temperature.save(element);
-        })
-    db.JLHome1718Temperature.find({"dateandtime" : ISODate("1970-01-01T00:00:00Z")}).count()
+db.JLHome1718Temperature.find().forEach(function(element) {
+    element.dateandtime = new Date(element.dateandtime);
+    db.JLHome1718Temperature.save(element);
+    })
+db.JLHome1718Temperature.find({"dateandtime" : ISODate("1970-01-01T00:00:00Z")}).count()
 
-    db.hourly_dublin_17_18.find().forEach(function(element) {
-        element.date = new Date(element.date);
-        db.hourly_dublin_17_18.save(element);
-        })
-    db.hourly_dublin_17_18.find({"date" : ISODate("1970-01-01T00:00:00Z")}).count()
+db.hourly_dublin_17_18.find().forEach(function(element) {
+    element.date = new Date(element.date);
+    db.hourly_dublin_17_18.save(element);
+    })
+db.hourly_dublin_17_18.find({"date" : ISODate("1970-01-01T00:00:00Z")}).count()
 
 // 2) How database allows for differently structured data **************************************************************
 // Mongo is a schemaless database, this means that there is no structure on the data that can be inserted.
 // Because of this, mongo will allow for differently structured data to be added to the database.
+
+db.JLHome1718Power.insert({dateandtime : new Date("2020-01-01T00:00:00"), watts : 40, humidity : 35});
+db.JLHome1718Power.insert({dateandtime : new Date("2020-01-01T00:01:00"), watts : 39, humidity : 33});
+db.JLHome1718Power.insert({dateandtime : new Date("2020-01-01T00:02:00"), watts : 35, humidity : 34});
+db.JLHome1718Power.insert({dateandtime : new Date("2020-01-01T00:03:00"), watts : 27, humidity : 33});
+db.JLHome1718Power.insert({dateandtime : new Date("2020-01-01T00:04:00"), watts : 33, humidity : 33});
+db.JLHome1718Power.insert({dateandtime : new Date("2020-01-01T00:00:00"), watts : 44, humidity : 34});
+
 
 // 3) How your solution will scale ************************************************************************************* 
 // Mongo supports sharding. Sharding is splitting the data up between different servers, controlled by one config server.
