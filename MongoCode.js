@@ -89,7 +89,7 @@ mongo localhost:27023
 rs.slaveOk()
 
 //new terminal 
-cd shard1ReplicaSet/
+cd shard2ReplicaSet/
 mkdir ./mongo1 ./mongo2 ./mongo3
 mongod --shardsvr --replSet shard2ReplicaSet --dbpath ./mongo1 --bind_ip localhost --port 27031
 mongod --shardsvr --replSet shard2ReplicaSet --dbpath ./mongo2 --bind_ip localhost --port 27032
