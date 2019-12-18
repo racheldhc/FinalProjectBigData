@@ -6,9 +6,9 @@
 // Delete the columns with the split data 
 
 // IMPORTING DATA TO MONGO
-// mongoimport --db FinalProject --collection hourly_dublin_17_18 --type csv --headerline --file /Users/racheldhc/Documents/year3/BigDataSystems/CA2/BDSDA2FPData/hourly_dublin_17_18.csv
-// mongoimport --db FinalProject --collection JLHome1718Power --type csv --fields "dateandtime, watts" --file /Users/racheldhc/Documents/year3/BigDataSystems/CA2/BDSDA2FPData/JLHome1718Power.csv 
-// mongoimport --db FinalProject --collection JLHome1718Temperature --type csv --fields "dateandtime, temperature" --file /Users/racheldhc/Documents/year3/BigDataSystems/CA2/BDSDA2FPData/JLHome1718Temperature.csv 
+// mongoimport --db FinalProject --port 27041 --collection hourly_dublin_17_18 --type csv --headerline --file /Users/racheldhc/Documents/year3/BigDataSystems/CA2/BDSDA2FPData/hourly_dublin_17_18.csv
+// mongoimport --db FinalProject --port 27041 --collection JLHome1718Power --type csv --fields "dateandtime, watts" --file /Users/racheldhc/Documents/year3/BigDataSystems/CA2/BDSDA2FPData/JLHome1718Power.csv 
+// mongoimport --db FinalProject --port 27041 --collection JLHome1718Temperature --type csv --fields "dateandtime, temperature" --file /Users/racheldhc/Documents/year3/BigDataSystems/CA2/BDSDA2FPData/JLHome1718Temperature.csv 
 
 // RUN THE FOLLOWING COMMANDS TO CHANGE THE DATE / DATEANDTIME COLUMN TO ISODATE
 db.JLHome1718Power.find().forEach(function(element) {
@@ -51,11 +51,62 @@ db.JLHome1718Power.insert({dateandtime : new Date("2020-01-01T00:00:00"), watts 
 // 4) Connecting each shard to the config server
 // 5) Importing the data
 
+mkdir ShardingRachel
+cd ShardingRachel
+mkdir configSvrReplicaSetRachel
+mkdir shard1ReplicaSet
+mkdir shard2ReplicaSet
+cd configSvrReplicaSetRachel
+mkdir ./mongo1 ./mongo2 ./mongo3
+
+//in different tabs
+mongod --configsvr --replSet csReplicaSetRachel --dbpath ./mongo1 --bind_ip localhost --port 27011
+mongod --configsvr --replSet csReplicaSetRachel --dbpath ./mongo2 --bind_ip localhost --port 27012
+mongod --configsvr --replSet csReplicaSetRachel --dbpath ./mongo3 --bind_ip localhost --port 27013
+
+//new terminal
+mongo localhost:27011
+rs.initiate({ _id : 'csReplicaSetRachel', configsvr : true, members : [ {_id:0, host: 'localhost:27011'}, {_id:1, host: 'localhost:27012'}, {_id:2, host: 'localhost:27013'} ]})
+rs.status()
+
+mongo localhost:27012
+rs.slaveOk()
+mongo localhost:27013
+rs.slaveOk()
+
+//in new terminal
+cd shard1ReplicaSet/
+mkdir ./mongo1 ./mongo2 ./mongo3
+mongod --shardsvr --replSet shard1ReplicaSet --dbpath ./mongo1 --bind_ip localhost --port 27021
+mongod --shardsvr --replSet shard1ReplicaSet --dbpath ./mongo2 --bind_ip localhost --port 27022
+mongod --shardsvr --replSet shard1ReplicaSet --dbpath ./mongo3 --bind_ip localhost --port 27023
+
+rs.initiate({ _id : ‘shard1ReplicaSet’, members : [ {_id:0, host: 'localhost:27021'}, {_id:1, host: 'localhost:27022'}, {_id:2, host: 'localhost:27023'} ]})
+
+mongo localhost:27022
+rs.slaveOk()
+mongo localhost:27023
+rs.slaveOk()
+
+//new terminal 
+cd shard1ReplicaSet/
+mkdir ./mongo1 ./mongo2 ./mongo3
+mongod --shardsvr --replSet shard2ReplicaSet --dbpath ./mongo1 --bind_ip localhost --port 27031
+mongod --shardsvr --replSet shard2ReplicaSet --dbpath ./mongo2 --bind_ip localhost --port 27032
+mongod --shardsvr --replSet shard2ReplicaSet --dbpath ./mongo3 --bind_ip localhost --port 27033
+
+mongo localhost:27031
+rs.initiate({ _id : ‘shard2ReplicaSet’, members : [ {_id:0, host: 'localhost:27031'}, {_id:1, host: 'localhost:27032'}, {_id:2, host: 'localhost:27033'} ]})
+
+
+mongo localhost:27032
+rs.slaveOk()
+mongo localhost:27033
+rs.slaveOk()
+
 // 4) Back up the data and high availability to servers ****************************************************************
 // Replica sets, that are made above, provide both backups and high availability. The replica sets provide high 
 // availability to each shard
-
-// 5) prepare, clean, aggregate and analyse the data *******************************************************************
 
 
 
