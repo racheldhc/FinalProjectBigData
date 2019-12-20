@@ -108,8 +108,13 @@ rs.slaveOk()
 // Replica sets, that are made above, provide both backups and high availability. The replica sets provide high 
 // availability to each shard
 
+// INDEXING
+db.JLHome1718Power.createIndex({dateandtime : -1})
+db.JLHome1718Temperature.createIndex({dateandtime : -1})
+db.hourly_dublin_17_18.createIndex({date : -1})
 
-
+// Created indexes on the date field in each collection in descending order to have the dates sorted, so it will be easier to mapreduce 
+// to get the average of values over a certain time (ie. normalise data to have all the values averaged over every hour)
 
 
 
